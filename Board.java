@@ -40,6 +40,7 @@ public class Board {
         board = new Tile[15][15];
         bonusSquares = new String[15][15];
 
+        // Initiate board and bonuses
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 board[i][j] = null;
@@ -47,6 +48,7 @@ public class Board {
             }
         }
 
+        // First word already been placed
         firstWordPlacedOnBoard = false;
     }
 
@@ -67,31 +69,30 @@ public class Board {
             return false;
         }
 
-        if (!isWordLeanOnTile(word)) {
-            return false;
+        if (isFirstWord(word)) {
+            return true;
+        } else {
+
+            if (!isWordLeanOnTile(word)) {
+                return false;
+            }
+
+            if (isWordSwapTile(word)) {
+                return false;
+            }
+            return true;
         }
 
-        if (isWordSwapTile(word)) {
-            return false;
-        }
-
-        return true;
     }
 
     private boolean isWordFitInBoard(Word word) {
         int row = word.getRow();
         int col = word.getCol();
-
-        // Checks if the word begins within the bounding of the board
-        if (row < 0 || col < 0 || row >= board.length || col >= board.length) {
-            return false;
-        }
-
         int wordLength = word.getTiles().length;
         int lastLetterPos = word.isVertical() ? row + wordLength - 1 : col + wordLength - 1;
 
-        // Checks if the word ends within the bounding of the board
-        if (lastLetterPos < 0 || lastLetterPos >= board.length) {
+        // Checks if the word fits within the bounding of the board
+        if (row < 0 || col < 0 || lastLetterPos >= board.length) {
             return false;
         }
 
@@ -107,6 +108,50 @@ public class Board {
         return true;
     }
 
+    public static boolean isBetween(int value, int min, int max) {
+        return ((value >= min) && (value <= max));
+    }
+
+    public boolean isFirstWord(Word checkedWord) {
+        int position, start, end;
+        if (checkedWord.isVertical()) {
+            position = checkedWord.col;
+            start = checkedWord.row;
+            end = checkedWord.row + checkedWord.tiles.length;
+        } else {
+            position = checkedWord.row;
+            start = checkedWord.col;
+            end = checkedWord.col + checkedWord.tiles.length;
+        }
+        if ((position == 7) && isBetween(start, 0, 7) && isBetween(end, 7, 14)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isWordSwapTile(Word word) {
+        int row = word.getRow();
+        int col = word.getCol();
+        boolean isVertical = word.isVertical();
+        Tile[] wordTiles = word.getTiles();
+
+        int emptyTileCount = 0;
+        int sameTileCount = 0;
+
+        for (int i = 0; i < wordTiles.length; i++) {
+            Tile currentBoardTile = isVertical ? board[row + i][col] : board[row][col + i];
+            Tile currentWordTile = wordTiles[i];
+
+            if (currentBoardTile == null && currentWordTile == null) {
+                emptyTileCount++;
+            } else if (currentBoardTile != null && currentWordTile != null && currentBoardTile == currentWordTile) {
+                sameTileCount++;
+            }
+        }
+
+        return emptyTileCount > 0 || sameTileCount > 0;
+    }
+
     private boolean isWordLeanOnTile(Word word) {
         if (!firstWordPlacedOnBoard) {// First word does not need to be leaned on tile (need to be leaned on "Star")
             return true;
@@ -119,24 +164,35 @@ public class Board {
         return false;
     }
 
-    private boolean isWordOverLapTile(Word word) {// Returns true if there is any tile on board where the new word need
-                                                  // to be placed, otherwise return false
-
-        int wordLength = word.getTiles().length;
+    private boolean isWordOverLapTile(Word word) {
         int row = word.getRow();
         int col = word.getCol();
         boolean isVertical = word.isVertical();
-        boolean isOverLap = false;
+        int wordLength = word.getTiles().length;
+        boolean isOverlapping = false;
 
+        // Check if any tile on the board intersects with the new word
         for (int i = 0; i < wordLength; i++) {
-            isOverLap = isVertical ? board[row + i][col] != null : board[row][col + i] != null;
-
-            if (isOverLap) {
-                return true;
+            if (isVertical) {
+                if (row + i >= board.length) {
+                    break;
+                }
+                if (board[row + i][col] != null) {
+                    isOverlapping = true;
+                    break;
+                }
+            } else {
+                if (col + i >= board[0].length) {
+                    break;
+                }
+                if (board[row][col + i] != null) {
+                    isOverlapping = true;
+                    break;
+                }
             }
         }
 
-        return false;
+        return isOverlapping;
     }
 
     private boolean isWordAdjacentToTile(Word word) {// Returns true if there is any tile near to word so it is not
@@ -253,27 +309,6 @@ public class Board {
         return false;
     }
 
-    private boolean isWordSwapTile(Word word) {
-        int row = word.getRow();
-        int col = word.getCol();
-        boolean isVertical = word.isVertical();
-        Tile[] wordTiles = word.getTiles();
-
-        for (int i = 0; i < wordTiles.length; i++) {
-            Tile currentBoardTile = isVertical ? board[row + i][col] : board[row][col + i];
-
-            if (currentBoardTile == null && wordTiles[i] == null) {
-                return true;
-            }
-
-            if (currentBoardTile != null && wordTiles[i] != null && currentBoardTile == wordTiles[i]) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public boolean dictionaryLegal(Word word) {
         return true;
     }
@@ -334,6 +369,40 @@ public class Board {
         return newWords;
     }
 
+    private int findRightTileCol(int row, int col) {
+        int currentCol = col;
+        while (currentCol < board.length && board[row][currentCol] != null) {
+            currentCol++;
+        }
+        return currentCol - 1;
+    }
+
+    private int findLeftTileCol(int row, int col) {
+        int currentCol = col;
+        while (currentCol >= 0 && board[row][currentCol] != null) {
+            currentCol--;
+        }
+        return currentCol + 1;
+    }
+
+    private int findBottomTileRow(int row, int col) {
+        int currentRow = row;
+        while (currentRow < board.length && board[currentRow][col] != null) {
+            currentRow++;
+        }
+        return currentRow - 1;
+    }
+
+    private int findTopTileRow(int startingRow, int column) {
+        int currentRow = startingRow;
+
+        while (currentRow > 0 && board[currentRow - 1][column] != null) {
+            currentRow--;
+        }
+
+        return currentRow;
+    }
+
     private Word createLongestVertical(int startWordRow, int endWordRow, int col) {// Create the new word from the new
                                                                                    // tiles in the board
         Tile[] newWordTiles = new Tile[endWordRow - startWordRow + 1];
@@ -356,90 +425,51 @@ public class Board {
         return new Word(newWordTiles, row, startWordCol, false);
     }
 
-    private int findRightTileCol(int row, int col) {
-        do {
-            col += 1;
-        } while (col < board.length && board[row][col] != null);
-
-        return col - 1;
-    }
-
-    private int findLeftTileCol(int row, int col) {
-        do {
-            col -= 1;
-        } while (col >= 0 && board[row][col] != null);
-
-        return col + 1;
-    }
-
-    private int findBottomTileRow(int row, int col) {
-        do {
-            row += 1;
-        } while (row < board.length && board[row][col] != null);
-
-        return row - 1;
-    }
-
-    private int findTopTileRow(int row, int col) {
-        do {
-            row -= 1;
-        } while (row >= 0 && board[row][col] != null);
-
-        return row + 1;
-    }
-
     public int getScore(Word word) {
-        int multiToScore = 1;
+        int multiplier = 1;
         int score = 0;
 
         int row = word.getRow();
         int col = word.getCol();
         boolean isVertical = word.isVertical();
-        Tile[] wordTiles = word.getTiles();
+        Tile[] tiles = word.getTiles();
 
-        for (int i = 0; i < wordTiles.length; i++) {
-            int letterScore = wordTiles[i].score;
+        for (int i = 0; i < tiles.length; i++) {
+            int letterScore = tiles[i].score;
             String bonusSquare = isVertical ? bonusSquares[row + i][col] : bonusSquares[row][col + i];
 
             if (bonusSquare == null) {
                 score += letterScore;
-                continue;
-            }
-
-            switch (bonusSquare) {
-                case "Star": {
-                    if (!firstWordPlacedOnBoard) {
-                        multiToScore = 2;
-                    }
-
-                    score += letterScore;
-                    break;
-                }
-                case "Yellow": {
-                    multiToScore = 2;
-                    score += letterScore;
-                    break;
-                }
-                case "Red": {
-                    multiToScore = 3;
-                    score += letterScore;
-                    break;
-                }
-                case "Blue": {
-                    score += 3 * letterScore;
-                    break;
-                }
-                case "LightBlue": {
-                    score += 2 * letterScore;
-                    break;
-                }
-                default: {
-                    score += letterScore;
+            } else {
+                switch (bonusSquare) {
+                    case "Star":
+                        if (!firstWordPlacedOnBoard) {
+                            multiplier = 2;
+                        }
+                        score += letterScore;
+                        break;
+                    case "Yellow":
+                        multiplier = 2;
+                        score += letterScore;
+                        break;
+                    case "Red":
+                        multiplier = 3;
+                        score += letterScore;
+                        break;
+                    case "Blue":
+                        score += 3 * letterScore;
+                        break;
+                    case "LightBlue":
+                        score += 2 * letterScore;
+                        break;
+                    default:
+                        score += letterScore;
+                        break;
                 }
             }
         }
 
-        return score * multiToScore;
+        return score * multiplier;
     }
 
     public int tryPlaceWord(Word word) {
