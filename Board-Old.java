@@ -4,7 +4,7 @@ import javax.swing.text.Position;
 import test.Tile;
 import java.util.ArrayList;
 
-public class Board {
+public class BoardOld {
 
     private static Board boardInstance = null;
     Tile[][] boardArray = new Tile[15][15];
