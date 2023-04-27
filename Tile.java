@@ -100,14 +100,4 @@ public class Tile {
 
     }
 
-    /*
-     * public static void main(String[] args) {
-     * Bag myBag = Tile.Bag.getBag();
-     * 
-     * int[] quantities = myBag.getQuantities();
-     * for (int i = 0; i < quantities.length; i+=1) {
-     * System.out.println(quantities[i]);
-     * }
-     * }
-     */
 }
