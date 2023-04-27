@@ -21,7 +21,7 @@ public class BoardOld {
         // Center
         score[7][7] = 5;
 
-        // Setting Red
+        // Setting red
         score[0][0] = (4);
         score[0][7] = (4);
         score[0][14] = (4);
@@ -31,7 +31,7 @@ public class BoardOld {
         score[14][7] = (4);
         score[14][14] = (4);
 
-        // Setting Yellow
+        // Setting yellow
         score[1][1] = (3);
         score[2][2] = (3);
         score[3][3] = (3);
@@ -49,7 +49,7 @@ public class BoardOld {
         score[12][2] = (3);
         score[13][1] = (3);
 
-        // Setting Blue
+        // Setting blue
         score[1][5] = (2);
         score[1][9] = (2);
         score[5][1] = (2);
@@ -63,7 +63,7 @@ public class BoardOld {
         score[13][5] = (2);
         score[13][9] = (2);
 
-        // Setting LightBlue
+        // Setting turquoise
         score[0][3] = (1);
         score[0][11] = (1);
         score[2][6] = (1);
@@ -282,7 +282,7 @@ public class BoardOld {
     }
 
     public int getScore(Word checkedWord) {
-        // Green=0, LightBlue=1, Blue=2, Yellow=3, Red=4, Star=5
+        // Green=0, turquoise=1, blue=2, yellow=3, red=4, Star=5
         boolean doubleScore = false;
         boolean trippleScore = false;
         int col = checkedWord.getCol();
