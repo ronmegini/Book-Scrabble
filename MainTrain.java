@@ -16,7 +16,7 @@ public class MainTrain {
 		if (q0[0] != q1[0] + 1)
 			System.out.println("getQuantities did not return a clone (-5)");
 
-		for (int k = 0; k < 9; k++) {
+		for (int k = 0; k < 9; k += 1) {
 			int[] qs = b.getQuantities();
 			Tile t = b.getRand();
 			int i = t.letter - 'A';
@@ -42,7 +42,7 @@ public class MainTrain {
 		int i = 0;
 		for (char c : s.toCharArray()) {
 			ts[i] = Bag.getBag().getTile(c);
-			i++;
+			i += 1;
 		}
 		return ts;
 	}
@@ -54,7 +54,7 @@ public class MainTrain {
 
 		Bag bag = Bag.getBag();
 		Tile[] ts = new Tile[10];
-		for (int i = 0; i < ts.length; i++)
+		for (int i = 0; i < ts.length; i += 1)
 			ts[i] = bag.getRand();
 
 		Word w0 = new Word(ts, 0, 6, true);

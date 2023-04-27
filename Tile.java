@@ -1,6 +1,7 @@
 package test;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class Tile {
     final char letter;
@@ -33,7 +34,7 @@ public class Tile {
         private Bag() {
             this.tilesAmount = new int[] { 9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2,
                     1 };
-            for (int i = 0; i <= 25; i++) {
+            for (int i = 0; i <= 25; i += 1) {
                 this.tiles[i] = new Tile(alphabet[i], scores[i]);
             }
         }
@@ -62,7 +63,7 @@ public class Tile {
         }
 
         public Tile getTile(char searchChar) {
-            for (int i = 0; i < this.tiles.length; i++) {
+            for (int i = 0; i < this.tiles.length; i += 1) {
                 if (this.tiles[i].letter == searchChar) {
                     if (tilesAmount[i] != 0) {
                         this.tilesAmount[i] -= 1;
@@ -74,7 +75,7 @@ public class Tile {
         }
 
         public void put(Tile returnedTile) {
-            for (int i = 0; i < this.alphabet.length; i++) {
+            for (int i = 0; i < this.alphabet.length; i += 1) {
                 if (this.alphabet[i] == returnedTile.letter) {
                     if (this.tilesAmount[i] < this.tilesMaximumAmount[i]) {
                         this.tilesAmount[i] += 1;
@@ -104,7 +105,7 @@ public class Tile {
      * Bag myBag = Tile.Bag.getBag();
      * 
      * int[] quantities = myBag.getQuantities();
-     * for (int i = 0; i < quantities.length; i++) {
+     * for (int i = 0; i < quantities.length; i+=1) {
      * System.out.println(quantities[i]);
      * }
      * }
