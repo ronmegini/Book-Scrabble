@@ -40,7 +40,6 @@ public class Board {
         board = new Tile[15][15];
         bonusSquares = new String[15][15];
 
-        // Initiate board and bonuses
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 board[i][j] = null;
@@ -48,7 +47,6 @@ public class Board {
             }
         }
 
-        // First word already been placed
         isFirstWordPlacedOnBoard = false;
     }
 
@@ -91,12 +89,10 @@ public class Board {
         int length = word.getTiles().length;
         int lastLetterPos = word.isVertical() ? row + length - 1 : col + length - 1;
 
-        // Checks if the word fits within the bounding of the board
         if (row < 0 || col < 0 || lastLetterPos >= board.length) {
             return false;
         }
 
-        // Checking if first word is placed in the center of the board
         if (!isFirstWordPlacedOnBoard) {
             int boardCenter = 7;
             int position = word.isVertical() ? row : col;
@@ -153,7 +149,7 @@ public class Board {
     }
 
     private boolean isWordLeaned(Word word) {
-        if (!isFirstWordPlacedOnBoard) {// First word does not need to be leaned on tile (need to be leaned on "Star")
+        if (!isFirstWordPlacedOnBoard) {
             return true;
         }
 
@@ -170,7 +166,6 @@ public class Board {
         int length = word.getTiles().length;
         boolean isOverlapping = false;
 
-        // Check if any tile on the board intersects with the new word
         for (int i = 0; i < length; i++) {
             if (word.isVertical()) {
                 if (row + i >= board.length) {
@@ -194,43 +189,31 @@ public class Board {
         return isOverlapping;
     }
 
-    private boolean isWordNearToTile(Word word) {// Returns true if there is any tile near to word so it is not
-                                                 // "floating" in board
+    private boolean isWordNearToTile(Word word) {
 
         int row = word.getRow();
         int col = word.getCol();
         int length = word.getTiles().length;
         boolean isVertical = word.isVertical();
 
-        // Checking ending tiles
-
-        // Getting the tile position that above the word if vertical or the tile
-        // position that is left to the word if horizontal
         int tileRow = isVertical ? row - 1 : row;
         int tileCol = isVertical ? col : col - 1;
 
-        // Checking if the above tile or the left tile within the board bounding
-        // And if it is not null returns true becuase the word adjacent to a tile
         boolean isNear = isVertical ? tileRow > 0 && board[tileRow][tileCol] != null
                 : tileCol > 0 && board[tileRow][tileCol] != null;
         if (isNear) {
             return true;
         }
 
-        // Getting the tile position that under the word if vertical or the tile
-        // position that is right to the word if horizontal
         tileRow = isVertical ? row + length : row;
         tileCol = isVertical ? col + length : col;
 
-        // Checking if the under tile or the right tile within the board bounding
-        // And if it is not null returns true becuase the word adjacent to a tile
         isNear = isVertical ? tileRow < board.length && board[tileRow][tileCol] != null
                 : tileCol < board.length && board[tileRow][tileCol] != null;
         if (isNear) {
             return true;
         }
 
-        // Checking the whole word nearby tiles
         isNear = isVertical ? tileLeftToWord(word) || tileRightToWord(word)
                 : tileUnderTheWord(word) || tileAboveTheWord(word);
         return isNear;
@@ -319,7 +302,6 @@ public class Board {
         Tile[] wordTiles = word.getTiles();
         ArrayList<Word> newWords = new ArrayList<Word>();
 
-        // Placing the word for checking other word creation
         for (int i = 0; i < wordTiles.length; i++) {
             Tile alreadyExistTile = isVertical ? board[row + i][col] : board[row][col + i];
 
@@ -328,21 +310,14 @@ public class Board {
             }
         }
 
-        // Vertical Word - finding the longest vertical new created word
-        // Horizontal Word - finding the longest horizontal new created word
         int startWordIndex = isVertical ? findTopTileRow(row, col) : findLeftTileCol(row, col);
         int endWordIndex = isVertical ? findBottomTileRow(row, col) : findRightTileCol(row, col);
 
-        // Create the new word found
         Word newWord = isVertical ? createLongestVertical(startWordIndex, endWordIndex, col)
                 : createLongestHorizontal(startWordIndex, endWordIndex, row);
 
         newWords.add(newWord);
 
-        // Vertical Word - finding horizontal word from each Tile of the new vertical
-        // word
-        // Horizontal Word - finding vertical word from each Tile of the new Horizontal
-        // word
         for (int i = 0; i < wordTiles.length; i++) {
             if (wordTiles[i] == null) {
                 continue;
@@ -351,14 +326,13 @@ public class Board {
             int startSubWordIndex = isVertical ? findLeftTileCol(row + i, col) : findTopTileRow(row, col + i);
             int endSubWordIndex = isVertical ? findRightTileCol(row + i, col) : findBottomTileRow(row, col + i);
 
-            if (startSubWordIndex != endSubWordIndex) {// Create the new word found
+            if (startSubWordIndex != endSubWordIndex) {
                 newWord = isVertical ? createLongestHorizontal(startSubWordIndex, endSubWordIndex, row + i)
                         : createLongestVertical(startSubWordIndex, endSubWordIndex, col + i);
                 newWords.add(newWord);
             }
         }
 
-        // Taking the word out of the board
         for (int i = 0; i < wordTiles.length; i++) {
             if (wordTiles[i] != null) {
                 board[isVertical ? row + i : row][isVertical ? col : col + i] = null;
@@ -402,8 +376,8 @@ public class Board {
         return currentRow;
     }
 
-    private Word createLongestVertical(int startWordRow, int endWordRow, int col) {// Create the new word from the new
-                                                                                   // tiles in the board
+    private Word createLongestVertical(int startWordRow, int endWordRow, int col) {
+
         Tile[] newWordTiles = new Tile[endWordRow - startWordRow + 1];
 
         for (int i = 0; i < newWordTiles.length; i++) {
@@ -413,8 +387,8 @@ public class Board {
         return new Word(newWordTiles, startWordRow, col, true);
     }
 
-    private Word createLongestHorizontal(int startWordCol, int endWordCol, int row) {// Create the new word from the new
-                                                                                     // tiles in the board
+    private Word createLongestHorizontal(int startWordCol, int endWordCol, int row) {
+
         Tile[] newWordTiles = new Tile[endWordCol - startWordCol + 1];
 
         for (int i = 0; i < newWordTiles.length; i++) {
