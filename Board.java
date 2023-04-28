@@ -131,21 +131,18 @@ public class Board {
         boolean isVertical = word.isVertical();
         Tile[] wordTiles = word.getTiles();
 
-        int emptyTileCount = 0;
-        int sameTileCount = 0;
+        int diffrentTileCount = 0;
 
         for (int i = 0; i < wordTiles.length; i++) {
             Tile alreadyExistTile = isVertical ? board[row + i][col] : board[row][col + i];
             Tile wordTile = wordTiles[i];
 
-            if (alreadyExistTile == null && wordTile == null) {
-                emptyTileCount++;
-            } else if (alreadyExistTile != null && wordTile != null && alreadyExistTile == wordTile) {
-                sameTileCount++;
+            if (alreadyExistTile != null && wordTile != null && alreadyExistTile != wordTile) {
+                diffrentTileCount++;
             }
         }
 
-        return emptyTileCount > 0 || sameTileCount > 0;
+        return diffrentTileCount > 0;
     }
 
     private boolean isWordLeaned(Word word) {
