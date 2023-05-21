@@ -1,39 +1,32 @@
 package test;
 
-import java.security.Key;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
 
 public class LFU implements CacheReplacementPolicy {
-    private int size;
-    private LinkedHashMap<String, Integer> cache;
-    String save;
+    // Class members:
+    HashMap<String, Integer> wordStock = new HashMap<>();
 
-    LFU() {
-        cache = new LinkedHashMap<>();
-        save = null;
+    public String remove() {
+        Collection<Integer> values = wordStock.values();
+        int min = values.stream().min(Integer::compareTo).get(); // find the min value
+        String to_be_deleted = wordStock.entrySet().stream() // Find the
+                .filter(entry -> entry.getValue() == min)
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
+
+        wordStock.remove(min);
+        return to_be_deleted;
     }
 
     public void add(String word) {
-        int Freuency = 1;
-        if (!cache.containsKey(word)) {
-            if (cache.isEmpty())
-                save = word;
-            cache.put(word, Freuency);
-        } else
-            cache.put(word, ++Freuency);
-    }
-
-    @Override
-    public String remove() {
-        int minVal = cache.get(save);
-        for (Map.Entry<String, Integer> entry : cache.entrySet()) {
-            if (minVal > entry.getValue()) {
-                minVal = entry.getValue();
-                save = entry.getKey();
-            }
+        if (wordStock.containsKey(word)) {
+            int count = wordStock.get(word) + 1;
+            wordStock.put(word, count);
+        } else {
+            wordStock.put(word, 1);
         }
-        return save;
     }
 }

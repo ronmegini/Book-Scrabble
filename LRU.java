@@ -3,24 +3,21 @@ package test;
 import java.util.LinkedHashSet;
 
 public class LRU implements CacheReplacementPolicy {
-    private int size;
-    private LinkedHashSet<String> cache;
+    // Class member
+    private LinkedHashSet<String> wordStock = new LinkedHashSet<>();
 
-    public LRU() {
-        this.size = size;
-        this.cache = new LinkedHashSet<>(size);
-    }
-
-    @Override
     public void add(String word) {
-        this.cache.remove(word);
-        this.cache.add(word);
+        if (wordStock.contains(word)) { // if the word is already in stock
+            wordStock.remove(word);
+            wordStock.add(word);
+        } else { // if the word is not in stock
+            wordStock.add(word);
+        }
     }
 
-    @Override
     public String remove() {
-        String[] cacheArray = cache.toArray(new String[cache.size()]);
-        cache.remove(cacheArray[0]);
-        return cacheArray[0];
+        String to_be_deleted = wordStock.iterator().next(); // save the word that we want to remove
+        wordStock.remove(wordStock.iterator().next()); // remove the word from the set
+        return to_be_deleted;
     }
 }

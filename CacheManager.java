@@ -3,30 +3,32 @@ package test;
 import java.util.LinkedHashSet;
 
 public class CacheManager {
+    LinkedHashSet<String> set;
+    CacheReplacementPolicy policy;
     int cacheSize;
-    private LinkedHashSet<String> cacheWords;
-    CacheReplacementPolicy crp;
+    int current;
 
-    public CacheManager(int cacheSize, CacheReplacementPolicy crp) {
-        this.cacheSize = cacheSize;
-        this.crp = crp;
-        this.cacheWords = new LinkedHashSet<String>();
-
+    public CacheManager(int size, CacheReplacementPolicy p) {
+        cacheSize = size;
+        current = 0;
+        set = new LinkedHashSet<>();
+        policy = p;
     }
 
     public boolean query(String word) {
-        if (cacheWords.contains(word))
-            return true;
-        else
-            return false;
+        return set.contains(word);
     }
 
-    public void add(String word) {// update crp and add to cache words
-        crp.add(word);
-        cacheWords.add(word);
-        if (cacheWords.size() > cacheSize) {
-            cacheWords.remove(crp.remove());
+    public void add(String word) {
+        if (current == cacheSize) {
+            String removed = policy.remove();
+            policy.add(word);
+            set.add(word);
+            set.remove(removed);
+        } else {
+            policy.add(word);
+            set.add(word);
+            current++;
         }
     }
-
 }
