@@ -6,27 +6,27 @@ import java.util.Collection;
 
 public class LFU implements CacheReplacementPolicy {
     // Class members:
-    HashMap<String, Integer> wordStock = new HashMap<>();
+    HashMap<String, Integer> wordSet = new HashMap<>();
 
     public String remove() {
-        Collection<Integer> values = wordStock.values();
+        Collection<Integer> values = wordSet.values();
         int min = values.stream().min(Integer::compareTo).get(); // find the min value
-        String to_be_deleted = wordStock.entrySet().stream() // Find the
+        String leastRecentUsed = wordSet.entrySet().stream() // Find the
                 .filter(entry -> entry.getValue() == min)
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(null);
 
-        wordStock.remove(min);
-        return to_be_deleted;
+        wordSet.remove(min);
+        return leastRecentUsed;
     }
 
     public void add(String word) {
-        if (wordStock.containsKey(word)) {
-            int count = wordStock.get(word) + 1;
-            wordStock.put(word, count);
+        if (wordSet.containsKey(word)) {
+            int count = wordSet.get(word) + 1;
+            wordSet.put(word, count);
         } else {
-            wordStock.put(word, 1);
+            wordSet.put(word, 1);
         }
     }
 }

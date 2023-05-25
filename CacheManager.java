@@ -4,15 +4,15 @@ import java.util.LinkedHashSet;
 
 public class CacheManager {
     LinkedHashSet<String> set;
-    CacheReplacementPolicy policy;
+    CacheReplacementPolicy crp;
     int cacheSize;
     int current;
 
-    public CacheManager(int size, CacheReplacementPolicy p) {
+    public CacheManager(int size, CacheReplacementPolicy givenPolicy) {
         cacheSize = size;
         current = 0;
         set = new LinkedHashSet<>();
-        policy = p;
+        crp = givenPolicy;
     }
 
     public boolean query(String word) {
@@ -20,13 +20,13 @@ public class CacheManager {
     }
 
     public void add(String word) {
-        if (current == cacheSize) {
-            String removed = policy.remove();
-            policy.add(word);
+        if (current >= cacheSize) {
+            String removed = crp.remove();
+            crp.add(word);
             set.add(word);
             set.remove(removed);
         } else {
-            policy.add(word);
+            crp.add(word);
             set.add(word);
             current++;
         }

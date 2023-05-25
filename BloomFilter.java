@@ -1,44 +1,45 @@
 package test;
 
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
+import java.util.BitSet;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Vector;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
 public class BloomFilter {
 
     BitSet bitSet;
-    MessageDigest md1;
-    MessageDigest md2;
+    MessageDigest hash1;
+    MessageDigest hash2;
     BigInteger bigInteger;
 
-    List<MessageDigest> mdList;
+    List<MessageDigest> hashList;
 
     int size;
 
-    public BloomFilter(int size, String alg1, String alg2) {
+    public BloomFilter(int size, String firstHashAlgo, String secondHashAlgo) {
         this.size = size;
         bitSet = new BitSet();
+        hashList = new ArrayList<>();
 
         try {
-            md1 = MessageDigest.getInstance(alg1);
-            md2 = MessageDigest.getInstance(alg2);
+            hash1 = MessageDigest.getInstance(firstHashAlgo);
+            hash2 = MessageDigest.getInstance(secondHashAlgo);
         } catch (Exception e) {
-            System.out.println("problem with algs");
+            System.out.println("Given hash algo doesnt exist");
         }
-        mdList = new ArrayList<>();
-        mdList.add(md1);
-        mdList.add(md2);
+
+        hashList.add(hash1);
+        hashList.add(hash2);
 
     }
 
     public void add(String word) {
 
-        for (MessageDigest md : mdList) {
-            byte[] toHash = md.digest(word.getBytes());
+        for (MessageDigest hash : hashList) {
+            byte[] toHash = hash.digest(word.getBytes());
             bigInteger = new BigInteger(1, toHash);
             int hashValue = Math.abs(bigInteger.abs().intValue()) % size;
             bitSet.set(hashValue, true);
@@ -49,11 +50,12 @@ public class BloomFilter {
 
     public boolean contains(String word) {
 
-        for (MessageDigest md : mdList) {
-            byte[] toHash = md.digest(word.getBytes());
+        for (MessageDigest hash : hashList) {
+            byte[] toHash = hash.digest(word.getBytes());
             bigInteger = new BigInteger(1, toHash);
             int hashValue = Math.abs(bigInteger.abs().intValue()) % size;
-            if (!bitSet.get(hashValue))
+            // Hash value doesnt exist in
+            if (bitSet.get(hashValue) == false)
                 return false;
         }
         return true;
