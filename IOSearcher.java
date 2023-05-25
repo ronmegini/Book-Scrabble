@@ -1,30 +1,29 @@
 package test;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class IOSearcher {
 
     public static boolean search(String word, String... fileNames) {
-        Set<String> set = null;
-        Stream<String> s;
         for (String fileName : fileNames) {
             try {
-                s = Files.lines(Paths.get(fileName));
-                set = s.filter(line -> line.contains(word)).collect(Collectors.toSet());
-                s.close(); // close Stream + file
-                if (!set.isEmpty()) {
-                    return true;
+                File file = new File(fileName);
+                if (file.exists() && file.canRead()) {
+                    Scanner scnr = new Scanner(file);
+                    while (scnr.hasNextLine() == true) {
+                        String line = scnr.nextLine();
+                        if (line.contains(word)) {
+                            scnr.close();
+                            return true;
+                        }
+                    }
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (FileNotFoundException e) {
+                System.out.println("Given file name doesnt exist");
             }
         }
-
         return false;
     }
 }

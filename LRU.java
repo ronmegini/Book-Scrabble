@@ -18,8 +18,8 @@ public class LRU implements CacheReplacementPolicy {
     }
 
     public String remove() {
-        String leastRecentUsed = wordSet.iterator().next();
-        wordSet.remove(leastRecentUsed);
-        return leastRecentUsed;
+        String leastRecentlyUsed = wordSet.iterator().next();
+        wordSet.remove(leastRecentlyUsed);
+        return leastRecentlyUsed;
     }
 }

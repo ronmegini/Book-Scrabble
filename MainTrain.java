@@ -48,38 +48,38 @@ public class MainTrain {
 		if (!b)
 			System.out.println("wrong result for CacheManager second queries (-5)");
 
-		boolean bf = exists.query("d"); // false, LRU is "a"
+		boolean bloomFilter = exists.query("d"); // false, LRU is "a"
 		exists.add("d");
 		boolean bt = exists.query("d"); // true
-		bf |= exists.query("a"); // false
+		bloomFilter |= exists.query("a"); // false
 		exists.add("a");
 		bt &= exists.query("a"); // true, LRU is "b"
 
-		if (bf || !bt)
+		if (bloomFilter || !bt)
 			System.out.println("wrong result for CacheManager last queries (-10)");
 
 	}
 
 	public static void testBloomFilter() {
-		BloomFilter bf = new BloomFilter(256, "MD5", "SHA1");
+		BloomFilter bloomFilter = new BloomFilter(256, "MD5", "SHA1");
 		String[] words = "the quick brown fox jumps over the lazy dog".split(" ");
 		for (String w : words)
-			bf.add(w);
+			bloomFilter.add(w);
 
-		if (!bf.toString().equals(
+		if (!bloomFilter.toString().equals(
 				"0010010000000000000000000000000000000000000100000000001000000000000000000000010000000001000000000000000100000010100000000010000000000000000000000000000000110000100000000000000000000000000010000000001000000000000000000000000000000000000000000000000000001"))
 			System.out.println("problem in the bit vector of the bloom filter (-10)");
 
 		boolean found = true;
 		for (String w : words)
-			found &= bf.contains(w);
+			found &= bloomFilter.contains(w);
 
 		if (!found)
 			System.out.println("problem finding words that should exist in the bloom filter (-15)");
 
 		found = false;
 		for (String w : words)
-			found |= bf.contains(w + "!");
+			found |= bloomFilter.contains(w + "!");
 
 		if (found)
 			System.out.println("problem finding words that should not exist in the bloom filter (-15)");
