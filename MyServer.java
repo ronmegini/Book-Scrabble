@@ -1,14 +1,15 @@
 package test;
 
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.io.IOException;
 
 public class MyServer {
+
     int port;
-    boolean stop;
     ClientHandler ch;
+    boolean stoped;
 
     public MyServer(int port, ClientHandler ch) {
         this.port = port;
@@ -16,15 +17,15 @@ public class MyServer {
     }
 
     void start() {
-        stop = false;
-        new Thread(() -> startServer()).start();
+        stoped = false;
+        new Thread(() -> initServer()).start();
     }
 
-    private void startServer() {
+    private void initServer() {
         try {
             ServerSocket server = new ServerSocket(port);
             server.setSoTimeout(1000);
-            while (!stop) {
+            while (!stoped) {
                 try {
                     Socket client = server.accept();
                     ch.handleClient(client.getInputStream(), client.getOutputStream());
@@ -42,7 +43,7 @@ public class MyServer {
     }
 
     void close() {
-        stop = true;
+        stoped = true;
     }
 
 }

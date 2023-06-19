@@ -56,7 +56,7 @@ public class MainTrain {
 		int port = 6000 + r.nextInt(1000);
 		MyServer s = new MyServer(port, new ClientHandler1());
 		int c = Thread.activeCount();
-		s.start(); // runs in the background
+		s.start();
 		try {
 			client1(port);
 		} catch (Exception e) {
