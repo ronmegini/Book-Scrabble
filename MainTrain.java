@@ -162,10 +162,6 @@ public class MainTrain {
 			testBSCH();
 		}
 		System.out.println("done");
-	}
-<<<<<<< HEAD
+	}<<<<<<<HEAD
 
-}
-=======
-}
->>>>>>> refs/remotes/origin/milestone-2
+}=======}>>>>>>>refs/remotes/origin/milestone-2
