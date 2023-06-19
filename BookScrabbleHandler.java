@@ -1,63 +1,38 @@
 package test;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Scanner;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.Socket;
-import java.util.Random;
 import java.util.Scanner;
 
 public class BookScrabbleHandler implements ClientHandler {
 
-    String line;
-    String[] words;
+    DictionaryManager dm;
+    PrintWriter out;
+    Scanner in;
 
     @Override
-    public void handleClient(InputStream inFromclient, OutputStream outToClient) {
-        Scanner scanner = new Scanner(inFromclient);
-        PrintWriter out = new PrintWriter(outToClient);
-        try {
-            if (scanner.hasNextLine()) {
-                line = scanner.nextLine();
-                words = line.split(",");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        DictionaryManager dM = new DictionaryManager();
+    public void handleClient(InputStream fromClient, OutputStream toClient) {
+        out = new PrintWriter(toClient);
+        in = new Scanner(fromClient);
 
-        String words2[] = new String[words.length - 1];
-        for (int i = 0, s = 1; s < words.length; i++, s++) {
-            words2[i] = words[s];
+        boolean wordAlreadyExists = false;
+        String[] input = in.next().split(",");
+
+        if (input[0].equals("Q")) {
+            wordAlreadyExists = DictionaryManager.get().query(Arrays.copyOfRange(input, 1, input.length));
+        } else if (input[0].equals("C")) {
+            wordAlreadyExists = DictionaryManager.get().challenge(Arrays.copyOfRange(input, 1, input.length));
         }
 
-        boolean flag;
-        if (words[0].equals("C")) {
-            flag = dM.challenge(words2);
-        } else {
-            flag = dM.query(words2);
-        }
-
-        if (flag) {
-            out.println("true");
-            out.flush();
-        } else {
-            out.println("false");
-            out.flush();
-        }
-        out.close();
+        out.println(wordAlreadyExists ? "true" : "false");
+        out.flush();
     }
 
     @Override
     public void close() {
-
+        out.close();
+        in.close();
     }
 }
